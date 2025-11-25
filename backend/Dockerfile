@@ -5,7 +5,7 @@ FROM python:3.11-alpine AS build
 
 WORKDIR /app
 
-# System deps (if needed later, keep minimal)
+# System deps
 RUN apk add --no-cache build-base
 
 COPY requirements.txt .
