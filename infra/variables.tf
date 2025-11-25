@@ -270,7 +270,7 @@ variable "ecs_task_requires_compatibilities" {
 
 variable "ecs_container_environment" {
   description = "Additional container environment variables"
-  type        = list(object({
+  type = list(object({
     name  = string
     value = string
   }))

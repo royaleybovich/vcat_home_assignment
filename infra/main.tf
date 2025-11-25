@@ -12,9 +12,9 @@ module "vpc" {
   aws_region  = var.aws_region
   vpc_cidr    = var.vpc_cidr
 
-  public_subnets        = var.public_subnets
-  public_subnet_newbits = var.public_subnet_newbits
-  private_subnets       = var.private_subnets
+  public_subnets         = var.public_subnets
+  public_subnet_newbits  = var.public_subnet_newbits
+  private_subnets        = var.private_subnets
   private_subnet_newbits = var.private_subnet_newbits
 
   tags = var.tags
@@ -117,8 +117,8 @@ module "security" {
 module "ecr" {
   source = "./modules/ecr"
 
-  name_prefix  = local.name_prefix
-  environment  = var.environment
+  name_prefix = local.name_prefix
+  environment = var.environment
 
   repositories = {
     backend = {
@@ -139,34 +139,34 @@ module "ecr" {
 module "database" {
   source = "./modules/database"
 
-  name_prefix      = local.name_prefix
-  db_subnet_ids    = module.vpc.private_subnet_ids
-  db_sg_id         = module.security.db_sg_id
+  name_prefix       = local.name_prefix
+  db_subnet_ids     = module.vpc.private_subnet_ids
+  db_sg_id          = module.security.db_sg_id
   subnet_group_name = ""
 
   databases = {
     postgres = {
-      identifier              = "${local.name_prefix}-db"
-      engine                  = var.db_engine
-      engine_version          = var.db_engine_version
-      instance_class          = var.db_instance_class
-      allocated_storage       = var.db_allocated_storage
-      max_allocated_storage   = var.db_max_allocated_storage
-      storage_type            = var.db_storage_type
-      storage_encrypted       = var.db_storage_encrypted
-      username                = var.db_username
-      password                = var.db_password
-      publicly_accessible     = var.db_publicly_accessible
-      skip_final_snapshot     = var.db_skip_final_snapshot
-      final_snapshot_identifier = var.db_final_snapshot_identifier
-      backup_retention_period = var.db_backup_retention_period
-      backup_window           = var.db_backup_window
-      maintenance_window      = var.db_maintenance_window
-      multi_az                = var.db_multi_az
-      deletion_protection     = var.db_deletion_protection
+      identifier                      = "${local.name_prefix}-db"
+      engine                          = var.db_engine
+      engine_version                  = var.db_engine_version
+      instance_class                  = var.db_instance_class
+      allocated_storage               = var.db_allocated_storage
+      max_allocated_storage           = var.db_max_allocated_storage
+      storage_type                    = var.db_storage_type
+      storage_encrypted               = var.db_storage_encrypted
+      username                        = var.db_username
+      password                        = var.db_password
+      publicly_accessible             = var.db_publicly_accessible
+      skip_final_snapshot             = var.db_skip_final_snapshot
+      final_snapshot_identifier       = var.db_final_snapshot_identifier
+      backup_retention_period         = var.db_backup_retention_period
+      backup_window                   = var.db_backup_window
+      maintenance_window              = var.db_maintenance_window
+      multi_az                        = var.db_multi_az
+      deletion_protection             = var.db_deletion_protection
       enabled_cloudwatch_logs_exports = var.db_enabled_cloudwatch_logs_exports
-      parameter_group_name    = var.db_parameter_group_name
-      tags                    = var.tags
+      parameter_group_name            = var.db_parameter_group_name
+      tags                            = var.tags
     }
   }
 
@@ -216,14 +216,14 @@ module "ecs" {
 
   load_balancers = {
     main = {
-      name                        = "${local.name_prefix}-alb"
-      internal                    = var.alb_internal
-      load_balancer_type          = var.alb_type
-      idle_timeout                = var.alb_idle_timeout
-      enable_deletion_protection  = var.alb_enable_deletion_protection
-      enable_http2                = var.alb_enable_http2
+      name                             = "${local.name_prefix}-alb"
+      internal                         = var.alb_internal
+      load_balancer_type               = var.alb_type
+      idle_timeout                     = var.alb_idle_timeout
+      enable_deletion_protection       = var.alb_enable_deletion_protection
+      enable_http2                     = var.alb_enable_http2
       enable_cross_zone_load_balancing = var.alb_enable_cross_zone_load_balancing
-      tags                        = var.tags
+      tags                             = var.tags
     }
   }
 
@@ -272,8 +272,8 @@ module "ecs" {
       memory                   = var.ecs_task_memory
       network_mode             = var.ecs_task_network_mode
       requires_compatibilities = var.ecs_task_requires_compatibilities
-      execution_role_arn       = null  # Will use task_execution role from iam_roles
-      task_role_arn            = null  # Will use task role from iam_roles
+      execution_role_arn       = null # Will use task_execution role from iam_roles
+      task_role_arn            = null # Will use task role from iam_roles
       container_definitions = [
         {
           name      = "backend"
@@ -314,11 +314,11 @@ module "ecs" {
 
   services = {
     backend = {
-      name            = "${local.name_prefix}-service"
+      name                = "${local.name_prefix}-service"
       task_definition_key = "backend"
-      desired_count   = var.ecs_service_desired_count
-      launch_type     = var.ecs_service_launch_type
-      platform_version = var.ecs_service_platform_version
+      desired_count       = var.ecs_service_desired_count
+      launch_type         = var.ecs_service_launch_type
+      platform_version    = var.ecs_service_platform_version
       network_configuration = {
         subnets          = module.vpc.public_subnet_ids
         security_groups  = [module.security.ecs_sg_id]

@@ -16,11 +16,11 @@ terraform {
     }
   }
 
-   backend "s3" {
-     bucket = "royal-terraform-backend-bucket"
-     key    = "vcat-home-assignment/terraform.tfstate"
-     region = "eu-west-1"
-   }
+  backend "s3" {
+    bucket = "royal-terraform-backend-bucket"
+    key    = "vcat-home-assignment/terraform.tfstate"
+    region = "eu-west-1"
+  }
 }
 
 provider "aws" {
