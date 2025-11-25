@@ -8,7 +8,7 @@ resource "aws_security_group" "this" {
   dynamic "ingress" {
     for_each = [
       for rule in each.value.ingress_rules : rule
-      if rule.security_groups == null || length(rule.security_groups) == 0
+      if length(try(rule.security_groups, [])) == 0
     ]
     content {
       description = ingress.value.description
@@ -23,7 +23,7 @@ resource "aws_security_group" "this" {
   dynamic "egress" {
     for_each = [
       for rule in each.value.egress_rules : rule
-      if rule.security_groups == null || length(rule.security_groups) == 0
+      if length(try(rule.security_groups, [])) == 0
     ]
     content {
       description = egress.value.description
@@ -48,22 +48,22 @@ resource "aws_security_group_rule" "ingress_with_sg" {
     for idx, rule in flatten([
       for sg_key, sg in var.security_groups : [
         for rule_idx, rule in sg.ingress_rules : {
-          key           = "${sg_key}-ingress-${rule_idx}"
-          sg_key        = sg_key
-          rule          = rule
+          key    = "${sg_key}-ingress-${rule_idx}"
+          sg_key = sg_key
+          rule   = rule
         }
-        if rule.security_groups != null && length(rule.security_groups) > 0
+        if length(try(rule.security_groups, [])) > 0
       ]
     ]) : rule.key => rule
   }
 
-  type                     = "ingress"
-  description              = each.value.rule.description
-  from_port                = each.value.rule.from_port
-  to_port                  = each.value.rule.to_port
-  protocol                 = each.value.rule.protocol
+  type                      = "ingress"
+  description               = each.value.rule.description
+  from_port                 = each.value.rule.from_port
+  to_port                   = each.value.rule.to_port
+  protocol                  = each.value.rule.protocol
   source_security_group_id  = aws_security_group.this[each.value.rule.security_groups[0]].id
-  security_group_id        = aws_security_group.this[each.value.sg_key].id
+  security_group_id         = aws_security_group.this[each.value.sg_key].id
 }
 
 resource "aws_security_group_rule" "egress_with_sg" {
@@ -71,22 +71,22 @@ resource "aws_security_group_rule" "egress_with_sg" {
     for idx, rule in flatten([
       for sg_key, sg in var.security_groups : [
         for rule_idx, rule in sg.egress_rules : {
-          key           = "${sg_key}-egress-${rule_idx}"
-          sg_key        = sg_key
-          rule          = rule
+          key    = "${sg_key}-egress-${rule_idx}"
+          sg_key = sg_key
+          rule   = rule
         }
-        if rule.security_groups != null && length(rule.security_groups) > 0
+        if length(try(rule.security_groups, [])) > 0
       ]
     ]) : rule.key => rule
   }
 
-  type                     = "egress"
-  description              = each.value.rule.description
-  from_port                = each.value.rule.from_port
-  to_port                  = each.value.rule.to_port
-  protocol                 = each.value.rule.protocol
+  type                      = "egress"
+  description               = each.value.rule.description
+  from_port                 = each.value.rule.from_port
+  to_port                   = each.value.rule.to_port
+  protocol                  = each.value.rule.protocol
   source_security_group_id  = aws_security_group.this[each.value.rule.security_groups[0]].id
-  security_group_id        = aws_security_group.this[each.value.sg_key].id
+  security_group_id         = aws_security_group.this[each.value.sg_key].id
 }
 
 # =======================================================
